@@ -669,7 +669,7 @@ setInterval(() => {
 // Redirecionamento Final
 document.querySelector("#result-screen button").addEventListener("click", () => {
     const params = window.location.search || sessionStorage.getItem('utm_params') || "";
-    window.location.href = "loja" + params;
+    window.location.href = "loja/" + params;
 });
 
 // Modo DEV
