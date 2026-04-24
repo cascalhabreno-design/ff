@@ -666,10 +666,11 @@ setInterval(() => {
     showPopup(`💎 ${nome} acabou de ganhar ${descontoFake}% de desconto!`);
 }, 15000);
 
-// Redirecionamento Final
+// Redirecionamento Final com a barra de fechamento
 document.querySelector("#result-screen button").addEventListener("click", () => {
     const params = window.location.search || sessionStorage.getItem('utm_params') || "";
-    window.location.href = "loja/" + params;
+    // Adicionamos a "/" após "loja" para garantir que o navegador entenda que é um diretório
+    window.location.href = "loja/" + (params.startsWith('?') ? params : params ? '?' + params : "");
 });
 
 // Modo DEV
