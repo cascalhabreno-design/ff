@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Pagamento via Pix</title>
+  <script src="https://cdn.jsdelivr.net/npm/qrious/dist/qrious.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
+    input, button { margin: 10px; padding: 10px; font-size: 16px; }
+    #pix-area { display: none; margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <h2>Finalizar Pedido</h2>
+  <input type="email" id="email" placeholder="Digite seu e-mail" required><br>
+  <input type="tel" id="telefone" placeholder="Digite seu telefone" required><br>
+  <select id="produto">
+    <option value="r19">1.060 Diamantes - R$ 14,90</option>
+    <option value="r1b">2.180 Diamantes - R$ 19,90</option>
+    <option value="r1e">5.600 Diamantes - R$ 37,79</option>
+  </select><br>
+  <button onclick="gerarPix()">Gerar QR Code PIX</button>
+
+  <div id="pix-area">
+    <h3>Escaneie o QR Code abaixo</h3>
+    <canvas id="pix-qrcode"></canvas><br>
+    <button onclick="copiarPix()">Copiar código PIX</button>
+  </div>
+
+  <script>
+    const produtos = {
+      r19: 1490,
+      r1b: 1990,
+      r1e: 3779
+    };
+
+    function gerarPix() {
+      const email = document.getElementById("email").value;
+      const telefone = document.getElementById("telefone").value;
+      const produto = document.getElementById("produto").value;
+      const valor = produtos[produto];
+
+      fetch("pix.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email,
+          telefone: telefone,
+          produto: produto,
+          valor: valor
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.pix && data.pix.qrCode) {
+          const qr = new QRious({
+            element: document.getElementById("pix-qrcode"),
+            size: 250,
+            value: data.pix.qrCode
+          });
+          document.getElementById("pix-area").style.display = "block";
+          window.pixCode = data.pix.qrCode;
+        } else {
+          alert("Erro ao gerar pagamento PIX");
+          console.log(data);
+        }
+      });
+    }
+
+    function copiarPix() {
+      navigator.clipboard.writeText(window.pixCode).then(() => {
+        alert("Código Pix copiado!");
+      });
+    }
+  </script>
+</body>
+</html>
